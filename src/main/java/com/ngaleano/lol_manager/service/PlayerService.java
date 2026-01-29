@@ -1,13 +1,16 @@
 package com.ngaleano.lol_manager.service;
 
+import com.ngaleano.lol_manager.dto.FreeAgentDTO;
 import java.util.List;
-import com.ngaleano.lol_manager.model.Player;
 
 public interface PlayerService {
+    void updateDiscord(Long userId, String discordUser);
 
-    List<Player> getAllPlayers();
+    void updatePlayerRanks(Long userId);
 
-    Player savePlayer(Player player);
+    void updatePlayerRoles(Long userId, String primary, String secondary);
 
-    Player assignTeam(Long playerId, Long teamId);
+    void toggleLookingForTeam(Long userId);
+
+    List<FreeAgentDTO> getPlayers(Boolean lookingForTeam, String role, String rank);
 }
