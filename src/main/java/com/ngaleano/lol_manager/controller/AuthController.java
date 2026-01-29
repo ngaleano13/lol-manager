@@ -1,10 +1,14 @@
 package com.ngaleano.lol_manager.controller;
 
-import com.ngaleano.lol_manager.model.Player;
-import com.ngaleano.lol_manager.model.User;
 import com.ngaleano.lol_manager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.ngaleano.lol_manager.dto.LinkAccountResponseDTO;
+import com.ngaleano.lol_manager.dto.RegisterUserDTO;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -14,23 +18,25 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        if (user.getEmail() == null || user.getPassword() == null) {
-            throw new RuntimeException("Email y Contraseña requeridos");
-        }
-        return userService.registerUser(user);
+    public ResponseEntity<Void> register(@RequestBody @Valid RegisterUserDTO dto) {
+        userService.registerUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/{userId}/link/start")
-    public Player startLink(@PathVariable Long userId,
+    public ResponseEntity<LinkAccountResponseDTO> startLink(@PathVariable Long userId,
             @RequestParam String name,
             @RequestParam String tag) {
-        return userService.startLinkAccount(userId, name, tag);
+        return ResponseEntity.ok(userService.startLinkAccount(userId, name, tag));
     }
 
     @PostMapping("/{userId}/link/verify")
-    public String verifyLink(@PathVariable Long userId) {
+    public ResponseEntity<String> verifyLink(@PathVariable Long userId) {
         boolean result = userService.verifyLinkAccount(userId);
-        return result ? "Cuenta verificada con exito" : "Fallo la verificacion";
+        if (result) {
+            return ResponseEntity.ok("Cuenta verificada con exito");
+        } else {
+            return ResponseEntity.badRequest().body("Fallo la verificacion");
+        }
     }
 }
