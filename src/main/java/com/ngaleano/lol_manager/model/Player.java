@@ -13,28 +13,37 @@ public class Player {
 
     @Column(unique = true)
     private String puuid;
+
     private String summonerName;
     private String tagLine;
 
-    @Column(name = "player_rank")
-    private String rank;
+    private String soloRank;
+    private String flexRank;
 
-    @Column(name = "game_role")
-    private String role;
+    private String primaryRole;
+    private String secondaryRole;
 
     private boolean verified = false;
-
     private Integer verificationIconId;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
 
+    private String discordUser;
+    private boolean lookingForTeam = true;
+
+    @OneToOne(mappedBy = "player")
+    private User user;
+
     public String getVerificationIconUrl() {
         if (this.verificationIconId == null) {
             return null;
         }
-        return "http://ddragon.leagueoflegends.com/cdn/13.24.1/img/profileicon/" + this.verificationIconId + ".png";
+        return "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/" + this.verificationIconId + ".png";
     }
 
+    public boolean hasTeam() {
+        return this.team != null;
+    }
 }
